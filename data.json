@@ -1,0 +1,48 @@
+{
+  "shipments": [
+    {
+      "trackingNumber": "SPX123456789",
+      "status": "In Transit",
+      "sender": {
+        "name": "Demo Sender",
+        "contact": "+234 800 000 0000"
+      },
+      "recipient": {
+        "name": "John Doe",
+        "contact": "+34 612 345 678",
+        "address": "Madrid, Spain"
+      },
+      "origin": "Lagos, Nigeria",
+      "destination": "Madrid, Spain",
+      "service": "Express International",
+      "parcelType": "Document",
+      "weight": "2.5 kg",
+      "reference": "INV-2025-001",
+      "estimatedDelivery": "2026-09-15",
+      "currentLocation": "In transit",
+      "events": [
+        {
+          "date": "2026-09-12",
+          "time": "10:24",
+          "location": "Lagos, Nigeria",
+          "status": "Departed from origin facility",
+          "note": "Shipment departed the origin facility."
+        },
+        {
+          "date": "2026-09-11",
+          "time": "18:15",
+          "location": "Lagos, Nigeria",
+          "status": "Picked up by courier",
+          "note": "Parcel collected by courier."
+        },
+        {
+          "date": "2026-09-11",
+          "time": "14:30",
+          "location": "Lagos, Nigeria",
+          "status": "Shipment information received",
+          "note": "Shipping information received."
+        }
+      ]
+    }
+  ]
+}
