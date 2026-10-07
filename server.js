@@ -35,18 +35,21 @@ const defaultDb = {
   shipments: [
     {
       trackingNumber: "SPX123456789",
-      status: "In Transit",
+      status: "In Flight",
       sender: { name: "Demo Sender", contact: "+234 800 000 0000" },
       recipient: { name: "John Doe", contact: "+34 612 345 678", address: "Madrid, Spain" },
       origin: "Lagos, Nigeria",
+      originFlag: "🇳🇬",
       destination: "Madrid, Spain",
+      destinationFlag: "🇪🇸",
       service: "Express International",
       parcelType: "Document",
       weight: "2.5 kg",
       reference: "INV-2025-001",
       estimatedDelivery: "2026-09-15",
-      currentLocation: "In transit",
+      currentLocation: "En route to Madrid, Spain",
       events: [
+        { date: "2026-09-13", time: "09:40", location: "En route to Madrid, Spain", status: "In Flight", note: "Your parcel is currently in flight to the destination country." },
         { date: "2026-09-12", time: "10:24", location: "Lagos, Nigeria", status: "Departed from origin facility", note: "Shipment departed the origin facility." },
         { date: "2026-09-11", time: "18:15", location: "Lagos, Nigeria", status: "Picked up by courier", note: "Parcel collected by courier." },
         { date: "2026-09-11", time: "14:30", location: "Lagos, Nigeria", status: "Shipment information received", note: "Shipping information received." }
@@ -68,6 +71,15 @@ function auth(req, res, next) {
   next();
 }
 function normalize(s) { return String(s || "").trim(); }
+
+function generateTrackingNumber(db) {
+  let tracking;
+  do {
+    const digits = crypto.randomInt(1000000000, 10000000000).toString();
+    tracking = `SPX${digits}`;
+  } while (db.shipments.some(s => String(s.trackingNumber).toUpperCase() === tracking));
+  return tracking;
+}
 
 app.post("/api/admin/login", (req, res) => {
   const { email, password } = req.body || {};
@@ -103,11 +115,7 @@ app.get("/api/track/:trackingNumber", (req, res) => {
 app.post("/api/shipments", auth, (req, res) => {
   const db = loadDb();
   const body = req.body || {};
-  const trackingNumber = normalize(body.trackingNumber).toUpperCase();
-  if (!trackingNumber) return res.status(400).json({ error: "Tracking number is required" });
-  if (db.shipments.some(s => s.trackingNumber === trackingNumber)) {
-    return res.status(409).json({ error: "Tracking number already exists" });
-  }
+  const trackingNumber = generateTrackingNumber(db);
 
   const shipment = {
     trackingNumber,
@@ -172,6 +180,5 @@ app.delete("/api/shipments/:trackingNumber", auth, (req, res) => {
   saveDb(db);
   res.json({ ok: true });
 });
-
 
 app.listen(PORT, () => console.log(`SpeedieX running on http://localhost:${PORT}`));
