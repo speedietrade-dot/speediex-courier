@@ -115,7 +115,9 @@ app.post("/api/shipments", auth, (req, res) => {
     sender: { name: normalize(body.senderName), contact: normalize(body.senderContact) },
     recipient: { name: normalize(body.recipientName), contact: normalize(body.recipientContact), address: normalize(body.recipientAddress) },
     origin: normalize(body.origin),
+    originFlag: normalize(body.originFlag),
     destination: normalize(body.destination),
+    destinationFlag: normalize(body.destinationFlag),
     service: normalize(body.service),
     parcelType: normalize(body.parcelType),
     weight: normalize(body.weight),
@@ -136,7 +138,7 @@ app.put("/api/shipments/:trackingNumber", auth, (req, res) => {
   if (!shipment) return res.status(404).json({ error: "Shipment not found" });
 
   const b = req.body || {};
-  const fields = ["status","origin","destination","service","parcelType","weight","reference","estimatedDelivery","currentLocation"];
+  const fields = ["status","origin","originFlag","destination","destinationFlag","service","parcelType","weight","reference","estimatedDelivery","currentLocation"];
   for (const f of fields) if (b[f] !== undefined) shipment[f] = normalize(b[f]);
   if (b.sender) shipment.sender = { ...shipment.sender, ...b.sender };
   if (b.recipient) shipment.recipient = { ...shipment.recipient, ...b.recipient };
