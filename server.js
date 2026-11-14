@@ -12,7 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DB_FILE = path.join(__dirname, "data.json");
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+const DB_FILE = path.join(DATA_DIR, "data.json");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -59,7 +60,15 @@ const defaultDb = {
 };
 
 function loadDb() {
-  if (!fs.existsSync(DB_FILE)) fs.writeFileSync(DB_FILE, JSON.stringify(defaultDb, null, 2));
+  if (!fs.existsSync(DB_FILE)) {
+    fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
+    const oldDbFile = path.join(__dirname, "data.json");
+    if (DB_FILE !== oldDbFile && fs.existsSync(oldDbFile)) {
+      fs.copyFileSync(oldDbFile, DB_FILE);
+    } else {
+      fs.writeFileSync(DB_FILE, JSON.stringify(defaultDb, null, 2));
+    }
+  }
   return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
 }
 function saveDb(db) {
